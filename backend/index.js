@@ -1,9 +1,14 @@
 const express=require("express");
+var cors = require('cors');
 
 const app=express();
 
+const {sequelize}=require("./config/db");
+const {uroute}=require("./routes/user.routes");
 
-const {sequelize}=require("./config/db")
+app.use(cors());
+app.use(express.json());
+app.use("/user",uroute);
 
 app.get("/",(req,res)=>{
     res.send({mag:"base api"})
