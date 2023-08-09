@@ -10,10 +10,10 @@ Blogr.post("/addblog",async(req,res)=>{
     try {
       const newBlogPost = await Blogpost.create({ title, content, authorId });
   
-      res.status(201).json({ msg: "new Blog created", data: newBlogPost });
+      res.status(201).json({ msg: "new Blog created", status:"success" });
     } catch (error) {
       console.error("Error creating blog post:", error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ msg: "Internal server error",status:"error" });
     }
 })
 
@@ -22,30 +22,30 @@ Blogr.get("/allblog",async(req,res)=>{
 
     try {
         const blogPosts = await Blogpost.findAll();
-        res.status(200).json({ msg: "All blogs", data: blogPosts });
+        res.status(200).json({ msg: "All blogs", data: blogPosts,status:"success" });
       } catch (error) {
         console.error("Error fetching blog posts:", error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ msg: "Internal server error", status:"error" });
       }
 })
 
 
-Blogr.get("/blogbyid",async(req,res)=>{
+Blogr.get("/blogbyid/:id",async(req,res)=>{
     const { id } = req.params;
   try {
     const blogPost = await Blogpost.findByPk(id);
     if (!blogPost) {
-      return res.status(404).json({ error: "Blog post not found" });
+      return res.status(404).json({ msg: "Blog post not found",status:"error" });
     }
-    res.status(200).json({ msg: `blog data of id - ${id}`, data: blogPost });
+    res.status(200).json({ msg: `blog data of id - ${id}`, data: blogPost,status:"success" });
   } catch (error) {
     console.error("Error fetching blog post:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ msg: "Internal server error",status:"error" });
   }
 });
 
 
-Blogr.patch("/blogupdate",async(req,res)=>{
+Blogr.patch("/blogupdate/:id",async(req,res)=>{
 
     const { id } = req.params;
   const authorId = req.user.id;
@@ -53,43 +53,43 @@ Blogr.patch("/blogupdate",async(req,res)=>{
   try {
     const blogPost = await Blogpost.findByPk(id);
     if (!blogPost) {
-      return res.status(404).json({ error: "Blog not found" });
+      return res.status(404).json({ msg: "Blog not found",status:"error" });
     }
 
     if (blogPost.authorId !== authorId) {
       return res
         .status(403)
-        .json({ error: "Not authorized to udpate the post" });
+        .json({ msg: "Not authorized to udpate the post", status:"error" });
     }
 
     await blogPost.update({ title, content });
-    res.status(200).send({ msg: "Blog updated", data: blogPost });
+    res.status(200).send({ msg: "Blog updated", data: blogPost,status:"success" });
   } catch (error) {
     console.error("Error updating blog:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ msg: "Internal server error",status:"error" });
   }
 
 })
 
 
-Blogr.delete("/blogdelete",async(req,res)=>{
+Blogr.delete("/blogdelete/:id",async(req,res)=>{
     const { id } = req.params;
     const authorId = req.user.id;
   try {
     const blogPost = await Blogpost.findByPk(id);
     if (!blogPost) {
-      return res.status(404).json({ error: "Blog post not found" });
+      return res.status(404).json({ msg: "Blog post not found",status:"error" });
     }
     if (blogPost.authorId !== authorId) {
       return res
         .status(403)
-        .json({ error: "Forbidden: You are not the author of this blog post" });
+        .json({ msg: "Forbidden: You are not the author of this blog post",status:"error" });
     }
     await blogPost.destroy();
-    res.status(204).json({ msg: "Blog post deleted successfully" });
+    res.status(200).json({ msg: "Blog post deleted successfully", status:"success" });
   } catch (error) {
     console.error("Error deleting blog post:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ msg: "Internal server error",status:"error" });
   }
 })
 

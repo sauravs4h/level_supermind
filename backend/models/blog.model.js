@@ -19,7 +19,8 @@ const Blogpost= sequelize.define("Blogpost",{
         allowNull:false
     },
     
-});
+},{updatedAt:false,createdAt:false});
+
 
 Blogpost.belongsTo(User, { foreignKey: "authorId", allowNull: false });
 User.hasMany(Blogpost, { foreignKey: "userId" });
